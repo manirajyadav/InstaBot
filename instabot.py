@@ -4,6 +4,8 @@ import requests
 import urllib
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
+from termcolor import colored
+
 
 # making a variable for received access token
 access_token = '2067625876.f1530e6.7c216946d050453d8a315f180a7c44b8'
@@ -21,7 +23,7 @@ def self_info():
     user_info = x.json()
     # checking whether request is successful or not by getting status code
     if user_info['meta']['code'] == 200:
-        # checking whether user is present
+        # whether user is present
         if len(user_info['data']):
             # printing user information
             print 'Username: %s' % (user_info['data']['username'])
@@ -48,20 +50,21 @@ def get_user_id(insta_username):
         if len(user_id['data']):
             return user_id['data'][0]['id']
         else:
+
             return None
     # request unsuccessful
     else:
         print "Status code other than 200 received."
-        exit()
 
 # function for getting info of user by its instagram username
 def get_user_info(insta_username):
     # calling function to get user-id
     user_id= get_user_id(insta_username)
+
     # if user does not exist
     if user_id==None:
-        print "User with the given name does not exist"
-        exit()
+        print "User with the given name does not exist.You are being sent back to the HOME!"
+        start_bot()
     # making request and accessing obtained json object
     request_url = (base_url+'users/%s?access_token=%s') % (user_id,access_token)
     print 'GET request url: %s' %(request_url)
@@ -90,8 +93,27 @@ def get_own_post():
 
     if own_media['meta']['code'] == 200:
         if len(own_media['data']):
-            image_name = own_media['data'][0]['id'] + '.jpeg'
-            image_url = own_media['data'][0]['images']['standard_resolution']['url']
+            c= True
+            while c:
+                answer= raw_input('Do you want to get the latest post?Reply: Y/N')
+                if answer.upper()== 'Y':
+                    x=0
+                    c= False
+                elif answer.upper()=='N':
+                    print 'choose from the following\n'
+                    print """2. Second last post\n3. Third last post..and so on.."""
+                    x= raw_input()
+                    if int(x) < len(own_media['data']) and x.isdigit():
+                        x= int(x)
+                        c= False
+                    else:
+                        print 'You did not choose appropriate option. Try again!'
+                else:
+                    print 'Press only y or n!!'
+                    c= True
+
+            image_name = own_media['data'][x]['id'] + '.jpeg'
+            image_url = own_media['data'][x]['images']['standard_resolution']['url']
             urllib.urlretrieve(image_url, image_name)
             print 'Your image has been downloaded!'
         else:
@@ -107,7 +129,7 @@ def get_user_post(insta_username):
     # if user doesnt exit
     if user_id == None:
         print 'User does not exist!'
-        exit()
+        start_bot()
     # making request and accessing obtained json object
     request_url = (base_url + 'users/%s/media/recent/?access_token=%s') % (user_id, access_token)
     print 'GET request url : %s' % (request_url)
@@ -116,8 +138,27 @@ def get_user_post(insta_username):
     if user_media['meta']['code'] == 200:
         # if posts exist
         if len( user_media['data'] ):
-            image_name = user_media['data'][0]['id'] + '.jpeg'
-            image_url = user_media['data'][0]['images']['standard_resolution']['url']
+            c = True
+            while c:
+                answer = raw_input( 'Do you want to get the latest post?Reply: Y/N' )
+                if answer.upper() == 'Y':
+                    x = 0
+                    c = False
+                elif answer.upper() == 'N':
+                    print 'choose from the following\n'
+                    print """2. Second last post\n3. Third last post..and so on.."""
+                    x = raw_input()
+                    if int( x ) < len(user_media['data'] ) and x.isdigit():
+                        x = int( x )
+                        c = False
+                    else:
+                        print 'You did not choose appropriate option. Try again!'
+                else:
+                    print 'Press only y or n!!'
+                    c = True
+
+            image_name = user_media['data'][x]['id'] + '.jpeg'
+            image_url = user_media['data'][x]['images']['standard_resolution']['url']
             # downloading the post
             urllib.urlretrieve( image_url, image_name )
             print 'Your image has been downloaded!'
@@ -134,8 +175,8 @@ def get_post_id(insta_username):
     user_id = get_user_id(insta_username)
     # checking whether user exist
     if user_id == None:
-        print 'User does not exist!'
-        exit()
+        print 'User does not exist!\n You are being sent back to the HOME!!'
+        start_bot()
     # making request and accessing obtained json object
     request_url = (base_url + 'users/%s/media/recent/?access_token=%s') % (user_id, access_token)
     print 'GET request url : %s' % (request_url)
@@ -145,8 +186,26 @@ def get_post_id(insta_username):
     if user_media['meta']['code'] == 200:
         # check if media exist
         if len(user_media['data']):
+            c = True
+            while c:
+                answer = raw_input( 'Do you want to get the latest post?Reply: Y/N' )
+                if answer.upper() == 'Y':
+                    x = 0
+                    c = False
+                elif answer.upper() == 'N':
+                    print 'choose from the following\n'
+                    print """2. Second last post\n3. Third last post..and so on.."""
+                    x = raw_input()
+                    if int( x ) < len( user_media['data'] ) and x.isdigit():
+                        x = int( x )
+                        c = False
+                    else:
+                        print 'You did not choose appropriate option. Try again!'
+                else:
+                    print 'Press only y or n!!'
+                    c = True
 
-            return user_media['data'][0]['id']
+            return user_media['data'][x]['id']
 
         else:
             print 'There is no recent post of the user!'
@@ -171,7 +230,7 @@ def like_a_post(insta_username):
 
     # check whether the request is successful
     if post_a_like['meta']['code'] == 200:
-        print 'Like was successful!'
+        print colored('Like was successful!', 'red')
     # when request is unsuccessful
     else:
         print 'Your like was unsuccessful. Try again!'
@@ -191,7 +250,7 @@ def post_a_comment(insta_username):
     make_comment = requests.post(request_url, payload).json()
     # if request successful
     if make_comment['meta']['code'] == 200:
-        print "Successfully added a new comment!"
+        print colored('Successfully added a new comment!','blue')
     # if request unsuccessful
     else:
         print "Unable to add comment. Try again!"
@@ -244,15 +303,15 @@ def delete_negative_comment(insta_username):
 # function to get list of people who liked a post
 def get_like_list(insta_username):
     # getting media id
-    media_id= get_post_id(insta_username)
+    media_id = get_post_id(insta_username)
     # setting endpoint url and accessing json object received
-    request_url=base_url+"media/"+media_id+"/likes?access_token="+access_token
-    print "GET request url:%s" %request_url
+    request_url=(base_url+"media/%s/likes?access_token=%s") %(media_id,access_token)
+    print "GET request url : %s" %(request_url)
     like_list= requests.get(request_url).json()
     # if likes accessed successfully
     if like_list['meta']['code']==200:
         # if any data of user liked the post present
-        if like_list['data']:
+        if len(like_list['data']):
             # displaying people who liked the post
             for x in range(len(like_list['data'])):
                 print 'People who liked this post:'
@@ -268,12 +327,13 @@ def get_comment_list(insta_username):
     # getting media id by caliing function
     media_id= get_post_id(insta_username)
     # setting endpoint url and accessing j.son object
-    request_url=base_url+'media/'+media_id+'/comments?access_token='+access_token
+    request_url=(base_url+'media/%s/comments?access_token=%s') %(media_id,access_token)
+    print 'GET request url : %s' %(request_url)
     comment_list=requests.get(request_url).json()
     # if request is successful
     if comment_list['meta']['code'] ==200:
         # if there exist some comments
-        if comment_list['data']:
+        if len(comment_list['data']):
             # displaying all the comments
             for x in range(len(comment_list['data'])):
                 print "%s : %s" %(comment_list['data'][x]['from']['username'], comment_list['data'][x]['text'])
@@ -285,6 +345,17 @@ def get_comment_list(insta_username):
         print 'Status code other than 200 received.'
 
 
+# function to list of recent media liked by the owner of the access_token
+def list_own_like():
+    # setting up endpoint url and accessing json object
+    request_url= base_url+ 'users/self/media/liked?access_token=' + access_token
+    print 'GET request url: %s' %(request_url)
+    own_likes = requests.get(request_url).json()
+    if own_likes['meta']['code']==200:
+        print 'Posts liked by the user are:'
+        for x in range(len(own_likes['data'])):
+            print colored('Post-Id:%s\n%s from %s.\n','blue') %(own_likes['data'][x]['id'],own_likes['data'][x]['type'],own_likes['data'][x]['user']['full_name'],)
+
 
 
 # starting the application
@@ -295,6 +366,7 @@ def start_bot():
     print 'YESS! You heard it right! "Insta-Bot".. Its way more smarter than you think it is!'
     print 'Try it yourself!!'
     while True:
+        print '\n'
         print 'Here are your menu options:'
         print "1.Get your own details\n"
         print "2.Get details of a user by username\n"
@@ -305,7 +377,9 @@ def start_bot():
         print "7.Get a list of comments on the recent post of a user\n"
         print "8.Make a comment on the recent post of a user\n"
         print "9.Delete negative comments from the recent post of a user\n"
-        print "10.Exit"
+        print "10.Get list of posts liked by the User.\n"
+        print "11.Exit."
+
 
         choice = int(raw_input("Enter you choice: "))
         if choice == 1:
@@ -334,7 +408,11 @@ def start_bot():
            insta_username = raw_input("Enter the username of the user: ")
            delete_negative_comment(insta_username)
         elif choice == 10:
+            list_own_like()
+
+        elif choice == 11:
             exit()
+
         else:
             print "Please choose the correct option!!"
 
