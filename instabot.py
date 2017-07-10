@@ -26,7 +26,7 @@ def self_info():
         # whether user is present
         if len(user_info['data']):
             # printing user information
-            print 'Username: %s' % (user_info['data']['username'])
+            print '\nUsername: %s' % (user_info['data']['username'])
             print 'No. of followers: %s' % (user_info['data']['counts']['followed_by'])
             print 'No. of people you are following: %s' % (user_info['data']['counts']['follows'])
             print 'No. of posts: %s' % (user_info['data']['counts']['media'])
@@ -96,31 +96,46 @@ def get_own_post():
         # if some posts exist
         if len(own_media['data']):
             c= True
-            # loop to choose any post other than latest
+            # loop to avoid crashes on invalid insertion
             while c:
+                # asking for post other than the latest
                 answer= raw_input('Do you want to get the latest post? Reply: Y/N')
                 if answer.upper()== 'Y':
-                    x=0
+                    x=1
                     c= False
+                # letting user choose the post
                 elif answer.upper()=='N':
                     print 'choose from the following\n'
-                    print """2. Second last post\n3. Third last post..and so on.."""
+                    print "2. Second last post\n3. Third last post..\nand so on.."
                     x= raw_input()
+                    # checking whether user entered valid post no.
                     if int(x) < len(own_media['data']) and x.isdigit():
                         x= int(x)
                         c= False
+                    # when invalid post no.
                     else:
                         print 'You did not choose appropriate option. Try again!'
+                # option other than y and n entered
                 else:
                     print 'Press only y or n!!'
                     c= True
+            # downloading the post
 
-            image_name = own_media['data'][x]['id'] + '.jpeg'
-            image_url = own_media['data'][x]['images']['standard_resolution']['url']
-            urllib.urlretrieve(image_url, image_name)
-            print 'Your image has been downloaded!'
+            if own_media['data'][x-1]['type']== 'image':
+                post_name = own_media['data'][x-1]['id'] + '.jpeg'
+                post_url = own_media['data'][x-1]['images']['standard_resolution']['url']
+                urllib.urlretrieve(post_url, post_name)
+                print 'Your image has been downloaded!'
+
+            else:
+                post_name = own_media['data'][x-1]['id'] + '.mp4'
+                post_url = own_media['data'][x-1]['videos']['standard_resolution']['url']
+                urllib.urlretrieve( post_url, post_name )
+                print 'Your video has been downloaded!'
+        # if no post exist
         else:
             print 'Post does not exist!'
+    # request unsuccessful
     else:
         print 'Status code other than 200 received!'
 
@@ -142,29 +157,41 @@ def get_user_post(insta_username):
         # if posts exist
         if len( user_media['data'] ):
             c = True
+            # loop for avoiding crashes on entering wrong choice
             while c:
-                answer = raw_input( 'Do you want to get the latest post?Reply: Y/N' )
+                # if user wants any post other than the latest one
+                answer = raw_input( 'Do you want to get the latest post? Reply: Y/N' )
                 if answer.upper() == 'Y':
-                    x = 0
+                    x = 1
                     c = False
                 elif answer.upper() == 'N':
-                    print 'choose from the following\n'
-                    print """2. Second last post\n3. Third last post..and so on.."""
+                    print 'Choose from the following\n'
+                    print "2. Second last post\n3. Third last post..\nand so on.."
                     x = raw_input()
-                    if int( x ) < len(user_media['data'] ) and x.isdigit():
+                    # checking whether user's choice does exist
+                    if int(x) < len(user_media['data'] ) and x.isdigit():
                         x = int( x )
                         c = False
+                    # when user chose a no. more than number of posts
                     else:
                         print 'You did not choose appropriate option. Try again!'
+                # when user entered something except y and n
                 else:
                     print 'Press only y or n!!'
                     c = True
-
-            image_name = user_media['data'][x]['id'] + '.jpeg'
-            image_url = user_media['data'][x]['images']['standard_resolution']['url']
             # downloading the post
-            urllib.urlretrieve( image_url, image_name )
-            print 'Your image has been downloaded!'
+
+            if user_media['data'][x-1]['type']== 'image':
+                post_name = user_media['data'][x-1]['id'] + '.jpeg'
+                post_url = user_media['data'][x-1]['images']['standard_resolution']['url']
+                urllib.urlretrieve(post_url, post_name)
+                print 'Your image has been downloaded!'
+
+            else:
+                post_name = user_media['data'][x-1]['id'] + '.mp4'
+                post_url = user_media['data'][x-1]['videos']['standard_resolution']['url']
+                urllib.urlretrieve( post_url, post_name )
+                print 'Your video has been downloaded!'
         # post does not exist
         else:
             print 'Post does not exist!'
@@ -190,26 +217,30 @@ def get_post_id(insta_username):
         # check if media exist
         if len(user_media['data']):
             c = True
+            # not letting application to terminate on a wrong choice
             while c:
-                answer = raw_input( 'Do you want to get the latest post?Reply: Y/N' )
+                # in case user wants some other post than the latest one!
+                answer = raw_input( 'Do you want to get the latest post? Reply: Y/N' )
                 if answer.upper() == 'Y':
-                    x = 0
+                    x = 1
                     c = False
                 elif answer.upper() == 'N':
-                    print 'choose from the following\n'
-                    print """2. Second last post\n3. Third last post..and so on.."""
+                    print 'Choose from the following\n'
+                    print "2. Second last post\n3. Third last post..\nand so on.."
+                    # taking input for post choice
                     x = raw_input()
+                    # checking whether we have posts of users's choice
                     if int( x ) < len( user_media['data'] ) and x.isdigit():
-                        x = int( x )
+                        x = int(x)
                         c = False
                     else:
                         print 'You did not choose appropriate option. Try again!'
                 else:
                     print 'Press only y or n!!'
                     c = True
-
-            return user_media['data'][x]['id']
-
+            # returning media id
+            return user_media['data'][x-1]['id']
+        # no recent post of user
         else:
             print 'There is no recent post of the user!'
             exit()
@@ -267,7 +298,7 @@ def delete_negative_comment(insta_username):
     print 'GET request url : %s' % (request_url)
     comment_info = requests.get( request_url ).json()
     # if request successful
-    if comment_info['meta']['info']==200:
+    if comment_info['meta']['code']==200:
         # if comment exists
         if len(comment_info['data']):
             ans= raw_input('Do you want to delete comments containing a specific words? Reply Y/N')
@@ -303,7 +334,7 @@ def delete_negative_comment(insta_username):
                     blob=TextBlob(comment_text,analyzer=NaiveBayesAnalyzer())
                     # checking whether sentiments of comment are more negative than positive
                     if (blob.sentiment.p_neg>blob.sentiment.p_pos):
-                        print "Negative comment:%s" %(comment_text)
+                        print "Negative comment:"+colored(comment_text,'red')
                         # setting up endpoint url
                         delete_url = (base_url+ 'media/%s/comments/%s/?access_token=%s') % (media_id, comment_id, access_token)
                         print  "DELETE request url:%s" %(delete_url)
@@ -317,10 +348,10 @@ def delete_negative_comment(insta_username):
                             print 'Unable to delete comment.'
                     # positive sentiments are greater than negative sentiments!
                     else:
-                        print "Positive comment:%s" %comment_text
+                        print "Positive comment:"+colored(comment_text, 'green')
         # no comments found
         else:
-            print "there are no comments on this post yet."
+            print "There are no comments on this post yet."
     # request unsuccessful
     else:
         print "Status code other than 200 received."
@@ -380,9 +411,9 @@ def list_own_like():
     if own_likes['meta']['code']==200:
         print 'Posts liked by the user are:'
         for x in range(len(own_likes['data'])):
-            print colored('Post-Id:%s\n%s from %s.\n','blue') %(own_likes['data'][x]['id'],own_likes['data'][x]['type'],own_likes['data'][x]['user']['full_name'],)
 
-
+            print colored('\nFrom:','blue')+own_likes['data'][x]['user']['full_name']+colored('\nType:','blue')+own_likes['data'][x]['type']
+            print colored('Post Id:','blue')+own_likes['data'][x]['id']
 # function to get a post with least likes
 def least_like(insta_username):
     # calling function to get user-id
@@ -432,16 +463,19 @@ def search_post_via_tag(insta_username, search_tag):
         # if posts exist
         if len( user_media['data'] ):
             id = []
+            # searching for the given hashtag and saving the post id
             for x in range(len(user_media['data'])):
                 if search_tag in user_media['data'][x]['tags']:
                     id.append(user_media['data'][x]['id'])
-
+            # if there was any post with given hashtag
             if len(id):
+                # iterating through all the ids
                 for y in id:
+                    # setting up endpoint url and accessing json object
                     request_url= base_url+ "media/%s?access_token=%s" %(y,access_token)
                     print "GET request url:%s" %(request_url)
                     tag_media = requests.get(request_url).json()
-
+                    # showing post with given hashtag and also downloading
                     print 'Tag: '+ colored('#','blue')+colored(search_tag,'blue')
                     print '\nPost-Id:' + colored(y,'blue')
                     print '\nCaption:%s' % (tag_media['data']['caption']['text'])
@@ -450,10 +484,13 @@ def search_post_via_tag(insta_username, search_tag):
                     # downloading the post
                     urllib.urlretrieve( image_url, image_name )
                     print '\nThe post has been downloaded!!'
+            # no media with given hashtag found
             else:
-                print "No media with '%s' tag found!!" %(search_tag)
+                print "No media with #"+colored(search_tag,'blue')+" tag found!!"
+        # user doesnt have any media yet
         else:
-            print "No media exist!!"
+            print "User has no media yet!!"
+    # request unsuccessful
     else:
         print 'Status code other than 200 received'
 
@@ -461,18 +498,19 @@ def search_post_via_tag(insta_username, search_tag):
 
 # starting the application
 def start_bot():
-
+    # starting with the application and greeting
     print '\n'
     print 'Hey! Welcome to instaBot!'
     print 'YESS! You heard it right! "Insta-Bot".. Its way more smarter than you think it is!'
     print 'Try it yourself!!'
     while True:
         print '\n'
+        # displaying menu
         print 'Here are your menu options:\n'
         print "1.Get your own details\n"
         print "2.Get details of a user by username\n"
-        print "3.Get your own recent post\n"
-        print "4.Get the recent post of a user by username\n"
+        print "3.Download your own recent post\n"
+        print "4.Download the recent post of a user by username\n"
         print "5.Get a list of people who have liked the recent post of a user\n"
         print "6.Like the recent post of a user\n"
         print "7.Get a list of comments on the recent post of a user\n"
@@ -480,51 +518,52 @@ def start_bot():
         print "9.Delete negative comments from the recent post of a user\n"
         print "10.Get list of posts liked by the User.\n"
         print "11.Get the post with least like.\n"
-        print "12.Search a post with a particular tag."
+        print "12.Search a post with a particular tag.\n"
         print "13.Exit.\n"
 
-
-        choice = int(raw_input("Enter you choice: "))
-        if choice == 1:
+        # getting the choice from user to proceed with the app
+        choice = raw_input("Enter you choice: ")
+        if choice == '1':
             self_info()
-        elif choice == 2:
+        elif choice == '2':
             insta_username = raw_input("Enter the username of the user: ")
             get_user_info(insta_username)
-        elif choice == 3:
+        elif choice == '3':
             get_own_post()
-        elif choice == 4:
+        elif choice == '4':
             insta_username = raw_input("Enter the username of the user: ")
             get_user_post(insta_username)
-        elif choice== 5:
+        elif choice== '5':
            insta_username = raw_input("Enter the username of the user: ")
            get_like_list(insta_username)
-        elif choice== 6:
+        elif choice== '6':
            insta_username = raw_input("Enter the username of the user: ")
            like_a_post(insta_username)
-        elif choice== 7:
+        elif choice== '7':
            insta_username = raw_input("Enter the username of the user: ")
            get_comment_list(insta_username)
-        elif choice== 8:
+        elif choice== '8':
            insta_username = raw_input("Enter the username of the user: ")
            post_a_comment(insta_username)
-        elif choice== 9:
+        elif choice== '9':
            insta_username = raw_input("Enter the username of the user: ")
            delete_negative_comment(insta_username)
-        elif choice == 10:
+        elif choice == '10':
             list_own_like()
-        elif choice== 11:
+        elif choice== '11':
             insta_username = raw_input( "Enter the username of the user: " )
             least_like(insta_username)
-        elif choice== 12:
+        elif choice== '12':
             insta_username = raw_input( "Enter the username of the user: " )
             search_tag = raw_input("Enter the tag you are looking for.")
             search_post_via_tag(insta_username,search_tag)
-        elif choice == 13:
+        elif choice == '13':
             exit()
-
+        # wrong choice
         else:
             print "Please choose the correct option!!"
 
+# starting the app by calling the function
 start_bot()
 
 
