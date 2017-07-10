@@ -59,19 +59,19 @@ def get_user_id(insta_username):
 # function for getting info of user by its instagram username
 def get_user_info(insta_username):
     # calling function to get user-id
-    user_id= get_user_id(insta_username)
+    user_id = get_user_id(insta_username)
 
     # if user does not exist
     if user_id == None:
         print "User with the given name does not exist.You are being sent back to the HOME!"
         start_bot()
     # making request and accessing obtained json object
-    request_url = (base_url+'users/%s?access_token=%s') % (user_id,access_token)
-    print 'GET request url: %s' %(request_url)
-    user_info=requests.get(request_url).json()
+    request_url = (base_url+'users/%s?access_token=%s') % (user_id, access_token)
+    print 'GET request url: %s' % request_url
+    user_info = requests.get(request_url).json()
 
     # if request is successful
-    if user_info['meta']['code']==200:
+    if user_info['meta']['code'] == 200:
         # if user-info is present
         if len(user_info['data']):
             print "Username: %s" % (user_info['data']['username'])
@@ -85,43 +85,47 @@ def get_user_info(insta_username):
     else:
         print 'Status code other than 200 received!'
 
+
 # function to get own posts
 def get_own_post():
     # setting up endpoint url and accessing json object
-    request_url = (base_url + 'users/self/media/recent/?access_token=%s') % (access_token)
-    print 'GET request url : %s' % (request_url)
+    request_url = (base_url + 'users/self/media/recent/?access_token=%s') % access_token
+    print 'GET request url : %s' % request_url
     own_media = requests.get(request_url).json()
     # if request is successful
     if own_media['meta']['code'] == 200:
         # if some posts exist
         if len(own_media['data']):
-            c= True
+            c = True
             # loop to avoid crashes on invalid insertion
             while c:
                 # asking for post other than the latest
                 answer= raw_input('Do you want to get the latest post? Reply: Y/N')
-                if answer.upper()== 'Y':
-                    x=1
-                    c= False
+                if answer.upper() == 'Y':
+                    x =1
+                    c = False
                 # letting user choose the post
-                elif answer.upper()=='N':
+                elif answer.upper() == 'N':
                     print 'choose from the following\n'
                     print "2. Second last post\n3. Third last post..\nand so on.."
-                    x= raw_input()
+                    x = raw_input()
                     # checking whether user entered valid post no.
-                    if int(x) < len(own_media['data']) and x.isdigit():
-                        x= int(x)
-                        c= False
+                    if x.isdigit():
+                        if x < len(own_media['data']):
+                            x = int(x)
+                            c = False
+                        else:
+                            print 'This post does not exist!'
                     # when invalid post no.
                     else:
                         print 'You did not choose appropriate option. Try again!'
                 # option other than y and n entered
                 else:
                     print 'Press only y or n!!'
-                    c= True
+                    c = True
             # downloading the post
 
-            if own_media['data'][x-1]['type']== 'image':
+            if own_media['data'][x-1]['type' ]== 'image':
                 post_name = own_media['data'][x-1]['id'] + '.jpeg'
                 post_url = own_media['data'][x-1]['images']['standard_resolution']['url']
                 urllib.urlretrieve(post_url, post_name)
@@ -130,7 +134,7 @@ def get_own_post():
             else:
                 post_name = own_media['data'][x-1]['id'] + '.mp4'
                 post_url = own_media['data'][x-1]['videos']['standard_resolution']['url']
-                urllib.urlretrieve( post_url, post_name )
+                urllib.urlretrieve(post_url, post_name)
                 print 'Your video has been downloaded!'
         # if no post exist
         else:
@@ -143,19 +147,19 @@ def get_own_post():
 # function to access user posts and downloading
 def get_user_post(insta_username):
     # calling function to get user-id
-    user_id=get_user_id(insta_username)
+    user_id = get_user_id(insta_username)
     # if user doesnt exit
     if user_id == None:
         print 'User does not exist!'
         start_bot()
     # making request and accessing obtained json object
     request_url = (base_url + 'users/%s/media/recent/?access_token=%s') % (user_id, access_token)
-    print 'GET request url : %s' % (request_url)
-    user_media = requests.get( request_url ).json()
+    print 'GET request url : %s' % request_url
+    user_media = requests.get(request_url).json()
     # if request is successful
     if user_media['meta']['code'] == 200:
         # if posts exist
-        if len( user_media['data'] ):
+        if len(user_media['data']):
             c = True
             # loop for avoiding crashes on entering wrong choice
             while c:
@@ -168,10 +172,13 @@ def get_user_post(insta_username):
                     print 'Choose from the following\n'
                     print "2. Second last post\n3. Third last post..\nand so on.."
                     x = raw_input()
-                    # checking whether user's choice does exist
-                    if int(x) < len(user_media['data'] ) and x.isdigit():
-                        x = int( x )
-                        c = False
+                    if x.isdigit():
+                        # checking whether user's choice does exist
+                        if x < len(user_media['data']) :
+                            x = int(x)
+                            c = False
+                        else:
+                            print 'This post does not Exist!!'
                     # when user chose a no. more than number of posts
                     else:
                         print 'You did not choose appropriate option. Try again!'
@@ -190,7 +197,7 @@ def get_user_post(insta_username):
             else:
                 post_name = user_media['data'][x-1]['id'] + '.mp4'
                 post_url = user_media['data'][x-1]['videos']['standard_resolution']['url']
-                urllib.urlretrieve( post_url, post_name )
+                urllib.urlretrieve(post_url, post_name)
                 print 'Your video has been downloaded!'
         # post does not exist
         else:
@@ -198,6 +205,7 @@ def get_user_post(insta_username):
     # request unsuccessful
     else:
         print 'Status code other than 200 received!'
+
 
 # function to get id of post
 def get_post_id(insta_username):
@@ -209,7 +217,7 @@ def get_post_id(insta_username):
         start_bot()
     # making request and accessing obtained json object
     request_url = (base_url + 'users/%s/media/recent/?access_token=%s') % (user_id, access_token)
-    print 'GET request url : %s' % (request_url)
+    print 'GET request url : %s' % request_url
     user_media = requests.get(request_url).json()
 
     # check if the request is successful
@@ -230,9 +238,13 @@ def get_post_id(insta_username):
                     # taking input for post choice
                     x = raw_input()
                     # checking whether we have posts of users's choice
-                    if int( x ) < len( user_media['data'] ) and x.isdigit():
-                        x = int(x)
-                        c = False
+                    if x.isdigit():
+                        # checking whether user's choice does exist
+                        if x < len(user_media['data']):
+                            x = int(x)
+                            c = False
+                        else:
+                            print 'This post does not Exist!!'
                     else:
                         print 'You did not choose appropriate option. Try again!'
                 else:
@@ -255,10 +267,10 @@ def like_a_post(insta_username):
     # calling functions to get recent posts id
     media_id = get_post_id(insta_username)
     # creating the endpoint url
-    request_url = (base_url+ 'media/%s/likes') % (media_id)
+    request_url = (base_url + 'media/%s/likes') % media_id
     # creating required payload
     payload = {"access_token": access_token}
-    print 'POST request url : %s' % (request_url)
+    print 'POST request url : %s' % request_url
     # accessing json object
     post_a_like = requests.post(request_url, payload).json()
 

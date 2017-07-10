@@ -17,8 +17,8 @@
       <file leaf-file-name="instabot.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/instabot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10026">
-              <caret line="557" column="5" lean-forward="false" selection-start-line="557" selection-start-column="5" selection-end-line="557" selection-end-column="5" />
+            <state relative-caret-position="-529">
+              <caret line="284" column="35" lean-forward="true" selection-start-line="284" selection-start-column="35" selection-end-line="284" selection-end-column="35" />
               <folding>
                 <element signature="e#57#72#0" expanded="true" />
               </folding>
@@ -223,9 +223,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="75" y="34" width="1301" height="744" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30996016" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30996016" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32847896" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -406,8 +405,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/instabot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10026">
-          <caret line="557" column="5" lean-forward="false" selection-start-line="557" selection-start-column="5" selection-end-line="557" selection-end-column="5" />
+        <state relative-caret-position="-529">
+          <caret line="284" column="35" lean-forward="true" selection-start-line="284" selection-start-column="35" selection-end-line="284" selection-end-column="35" />
           <folding>
             <element signature="e#57#72#0" expanded="true" />
           </folding>
