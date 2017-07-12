@@ -102,7 +102,7 @@ def get_own_post():
                 # asking for post other than the latest
                 answer= raw_input('Do you want to get the latest post? Reply: Y/N')
                 if answer.upper() == 'Y':
-                    x =1
+                    x = 1
                     c = False
                 # letting user choose the post
                 elif answer.upper() == 'N':
@@ -281,6 +281,7 @@ def like_a_post(insta_username):
     else:
         print 'Your like was unsuccessful. Try again!'
 
+
 # function to post a comment
 def post_a_comment(insta_username):
     # getting media id
@@ -288,13 +289,13 @@ def post_a_comment(insta_username):
 
     while True:
         # getting the comment by user
-        comment_text = raw_input( "Your comment: " )
-        if len(comment_text)>0 and comment_text.isspace()==False:
+        comment_text = raw_input("Your comment: ")
+        if len(comment_text)>0 and comment_text.isspace() == False:
             # creating required payload
-            payload = {"access_token":access_token, "text" : comment_text}
+            payload = {"access_token": access_token, "text": comment_text}
             # creating endpoint url
-            request_url = (base_url + 'media/%s/comments') % (media_id)
-            print 'POST request url : %s' % (request_url)
+            request_url = (base_url + 'media/%s/comments') % media_id
+            print 'POST request url : %s' % request_url
             # accessing json object
             make_comment = requests.post(request_url, payload).json()
             # if request successful
@@ -307,36 +308,37 @@ def post_a_comment(insta_username):
         else:
             print 'Cannot post an empty comment! Try again!'
 
+
 # function to delete all negative comments from a post
 def delete_negative_comment(insta_username):
     # calling the function for getting media id
-    media_id=get_post_id(insta_username)
+    media_id = get_post_id(insta_username)
     # setting endpoint url and accessing json object
     request_url = (base_url + 'media/%s/comments/?access_token=%s') % (media_id, access_token)
-    print 'GET request url : %s' % (request_url)
-    comment_info = requests.get( request_url ).json()
+    print 'GET request url : %s' % request_url
+    comment_info = requests.get(request_url).json()
     # if request successful
-    if comment_info['meta']['code']==200:
+    if comment_info['meta']['code'] == 200:
         # if comment exists
         if len(comment_info['data']):
-            ans= raw_input('Do you want to delete comments containing a specific words? Reply Y/N')
-            if ans.upper()=='Y':
+            ans = raw_input('Do you want to delete comments containing a specific words? Reply Y/N')
+            if ans.upper() == 'Y':
                 while True:
-                    del_word= raw_input('Enter the Word!!')
-                    if len(del_word)>0 and del_word.isspace()== False:
-                        for x in range( 0, len( comment_info['data'] ) ):
+                    del_word = raw_input('Enter the Word!!')
+                    if len(del_word) > 0 and del_word.isspace() == False:
+                        for x in range(0, len(comment_info['data'])):
                             # getting comment id
                             comment_id = comment_info['data'][x]['id']
                             # getting comment text
                             comment_text = comment_info['data'][x]['text']
                             if del_word in comment_text:
-                                print "Comment containing the given word: "+ colored(comment_text, 'red')
+                                print "Comment containing the given word: " + colored(comment_text, 'red')
                                 # setting up endpoint url
                                 delete_url = (base_url + 'media/%s/comments/%s/?access_token=%s') % (
                                 media_id, comment_id, access_token)
-                                print  "DELETE request url:%s" % (delete_url)
+                                print "DELETE request url:%s" % delete_url
                                 # accessing json object
-                                delete_info = requests.delete( delete_url ).json()
+                                delete_info = requests.delete(delete_url).json()
                                 # check whether request is successful
                                 if delete_info['meta']['code'] == 200:
                                     print '\nComment successfully deleted.'
@@ -353,23 +355,23 @@ def delete_negative_comment(insta_username):
                         print 'You did not enter any word to search and delete comment for! Try again!'
             else:
                 # iterating over all comments
-                for x in range(0,len(comment_info['data'])):
+                for x in range(0, len(comment_info['data'])):
                     # getting comment id
-                    comment_id=comment_info['data'][x]['id']
+                    comment_id = comment_info['data'][x]['id']
                     # getting comment text
-                    comment_text=comment_info['data'][x]['text']
+                    comment_text = comment_info['data'][x]['text']
                     # analysing comment by 'TextBlob'
-                    blob=TextBlob(comment_text,analyzer=NaiveBayesAnalyzer())
+                    blob = TextBlob(comment_text,analyzer=NaiveBayesAnalyzer())
                     # checking whether sentiments of comment are more negative than positive
-                    if (blob.sentiment.p_neg>blob.sentiment.p_pos):
-                        print "Negative comment:"+colored(comment_text,'red')
+                    if blob.sentiment.p_neg > blob.sentiment.p_pos:
+                        print "Negative comment:"+colored(comment_text, 'red')
                         # setting up endpoint url
                         delete_url = (base_url+ 'media/%s/comments/%s/?access_token=%s') % (media_id, comment_id, access_token)
-                        print  "DELETE request url:%s" %(delete_url)
+                        print "DELETE request url:%s" %delete_url
                         # accessing json object
-                        delete_info = requests.delete( delete_url ).json()
+                        delete_info = requests.delete(delete_url).json()
                         # check whether request is successful
-                        if delete_info['meta']['code']==200:
+                        if delete_info['meta']['code'] == 200:
                             print 'Comment successfully deleted.'
                         # request not successful
                         else:
@@ -392,9 +394,9 @@ def get_like_list(insta_username):
     # setting endpoint url and accessing json object received
     request_url=(base_url+"media/%s/likes?access_token=%s") %(media_id,access_token)
     print "GET request url : %s" %(request_url)
-    like_list= requests.get(request_url).json()
+    like_list = requests.get(request_url).json()
     # if likes accessed successfully
-    if like_list['meta']['code']==200:
+    if like_list['meta']['code'] == 200:
         # if any data of user liked the post present
         if len(like_list['data']):
             # displaying people who liked the post
@@ -410,13 +412,13 @@ def get_like_list(insta_username):
 # function to get list of comments
 def get_comment_list(insta_username):
     # getting media id by caliing function
-    media_id= get_post_id(insta_username)
+    media_id = get_post_id(insta_username)
     # setting endpoint url and accessing j.son object
-    request_url=(base_url+'media/%s/comments?access_token=%s') %(media_id,access_token)
-    print 'GET request url : %s' %(request_url)
-    comment_list=requests.get(request_url).json()
+    request_url = (base_url+'media/%s/comments?access_token=%s') %(media_id,access_token)
+    print 'GET request url : %s' % request_url
+    comment_list = requests.get(request_url).json()
     # if request is successful
-    if comment_list['meta']['code'] ==200:
+    if comment_list['meta']['code'] == 200:
         # if there exist some comments
         if len(comment_list['data']):
             # displaying all the comments
@@ -433,45 +435,47 @@ def get_comment_list(insta_username):
 # function to list of recent media liked by the owner of the access_token
 def list_own_like():
     # setting up endpoint url and accessing json object
-    request_url= base_url+ 'users/self/media/liked?access_token=' + access_token
+    request_url = base_url+ 'users/self/media/liked?access_token=' + access_token
     print 'GET request url: %s' %(request_url)
     own_likes = requests.get(request_url).json()
-    if own_likes['meta']['code']==200:
+    if own_likes['meta']['code'] == 200:
         print 'Posts liked by the user are:'
         for x in range(len(own_likes['data'])):
 
             print colored('\nFrom:','blue')+own_likes['data'][x]['user']['full_name']+colored('\nType:','blue')+own_likes['data'][x]['type']
             print colored('Post Id:','blue')+own_likes['data'][x]['id']
+
+
 # function to get a post with least likes
 def least_like(insta_username):
     # calling function to get user-id
     user_id = get_user_id( insta_username )
     # if user doesnt exit
     if user_id == None:
-        print 'User does not exist!'
+        print 'User does not exist!\n'
         start_bot()
     # making request and accessing obtained json object
     request_url = (base_url + 'users/%s/media/recent/?access_token=%s') % (user_id, access_token)
-    print 'GET request url : %s' % (request_url)
-    user_media = requests.get( request_url ).json()
+    print 'GET request url : %s' % request_url
+    user_media = requests.get(request_url).json()
     # if request is successful
     if user_media['meta']['code'] == 200:
         # if posts exist
         if len(user_media['data']):
-            least=user_media['data'][0]['likes']['count']
-            c=0
+            least = user_media['data'][0]['likes']['count']
+            c = 0
             for x in range (1,len(user_media['data'])):
-                likes= user_media['data'][x]['likes']['count']
+                likes = user_media['data'][x]['likes']['count']
                 if likes < least:
                     least = likes
-                    c=x
+                    c = x
 
             print "\nPost with least likes is:\nId=%s\nlikes=%s" %(user_media['data'][c]['id'], least)
             print "Caption:%s" %(user_media['data'][c]['caption']['text'])
             image_name = user_media['data'][c]['id'] + '.jpeg'
             image_url = user_media['data'][c]['images']['standard_resolution']['url']
             # downloading the post
-            urllib.urlretrieve( image_url, image_name )
+            urllib.urlretrieve(image_url, image_name)
             print '\nAnd the post has been downloaded!!'
 
 # search for a post with a particular tag
@@ -484,12 +488,12 @@ def search_post_via_tag(insta_username, search_tag):
         start_bot()
     # making request and accessing obtained json object
     request_url = (base_url + 'users/%s/media/recent/?access_token=%s') % (user_id, access_token)
-    print 'GET request url : %s' % (request_url)
-    user_media = requests.get( request_url ).json()
+    print 'GET request url : %s' % request_url
+    user_media = requests.get(request_url).json()
     # if request is successful
     if user_media['meta']['code'] == 200:
         # if posts exist
-        if len( user_media['data'] ):
+        if len(user_media['data']):
             id = []
             # searching for the given hashtag and saving the post id
             for x in range(len(user_media['data'])):
@@ -551,75 +555,71 @@ def start_bot():
 
         # getting the choice from user to proceed with the app
         choice = raw_input("Enter you choice: ")
+
         if choice == '1':
             self_info()
-        elif choice == '2':
 
+        elif choice == '2':
             while True:
                 insta_username = raw_input("Enter the username of the user: ")
-                if len(insta_username)>0 and insta_username.isspace()==False:
+                if len(insta_username)>0 and insta_username.isspace() == False:
                     get_user_info(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
+
         elif choice == '3':
             get_own_post()
 
         elif choice == '4':
-
             while True:
                 insta_username = raw_input("Enter the username of the user: ")
-                if len(insta_username)>0 and insta_username.isspace()==False:
+                if len(insta_username)>0 and insta_username.isspace() == False:
                     get_user_post(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
-        elif choice== '5':
-
+        elif choice == '5':
             while True:
-                insta_username = raw_input( "Enter the username of the user: " )
-                if len( insta_username ) > 0 and insta_username.isspace() == False:
+                insta_username = raw_input("Enter the username of the user: ")
+                if len(insta_username) > 0 and insta_username.isspace() == False:
                     get_like_list(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
 
-        elif choice== '6':
-
+        elif choice == '6':
             while True:
-                insta_username = raw_input( "Enter the username of the user: " )
-                if len( insta_username ) > 0 and insta_username.isspace() == False:
-                    like_a_post( insta_username )
+                insta_username = raw_input("Enter the username of the user: ")
+                if len(insta_username) > 0 and insta_username.isspace() == False:
+                    like_a_post(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
 
-        elif choice== '7':
-
+        elif choice == '7':
             while True:
-                insta_username = raw_input( "Enter the username of the user: " )
-                if len( insta_username ) > 0 and insta_username.isspace() == False:
-                    get_comment_list( insta_username )
+                insta_username = raw_input("Enter the username of the user: ")
+                if len(insta_username) > 0 and insta_username.isspace() == False:
+                    get_comment_list(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
 
-        elif choice== '8':
-
+        elif choice == '8':
             while True:
-                insta_username = raw_input( "Enter the username of the user: " )
-                if len( insta_username ) > 0 and insta_username.isspace() == False:
-                    post_a_comment( insta_username )
+                insta_username = raw_input("Enter the username of the user: ")
+                if len(insta_username) > 0 and insta_username.isspace() == False:
+                    post_a_comment(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
 
-        elif choice== '9':
-
+        elif choice == '9':
             while True:
-                insta_username = raw_input( "Enter the username of the user: " )
-                if len( insta_username ) > 0 and insta_username.isspace() == False:
-                    delete_negative_comment( insta_username )
+                insta_username = raw_input("Enter the username of the user: ")
+                if len(insta_username) > 0 and insta_username.isspace() == False:
+                    delete_negative_comment(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
@@ -627,25 +627,23 @@ def start_bot():
         elif choice == '10':
             list_own_like()
 
-        elif choice== '11':
-
+        elif choice == '11':
             while True:
-                insta_username = raw_input( "Enter the username of the user: " )
-                if len( insta_username ) > 0 and insta_username.isspace() == False:
-                    least_like( insta_username )
+                insta_username = raw_input("Enter the username of the user: ")
+                if len(insta_username) > 0 and insta_username.isspace() == False:
+                    least_like(insta_username)
                     break
                 else:
                     print 'Enter a valid name!!'
 
-        elif choice== '12':
-
+        elif choice == '12':
             while True:
-                insta_username = raw_input( "Enter the username of the user:\n" )
-                if len( insta_username ) > 0 and insta_username.isspace() == False:
+                insta_username = raw_input("Enter the username of the user:\n")
+                if len(insta_username) > 0 and insta_username.isspace() == False:
                     while True:
                         search_tag = raw_input("Enter the tag you are looking for.")
-                        if len(search_tag)>0 and search_tag.isspace()==False:
-                            search_post_via_tag( insta_username, search_tag )
+                        if len(search_tag)>0 and search_tag.isspace() == False:
+                            search_post_via_tag(insta_username, search_tag )
                             break
                         else:
                             print 'You did not enter any tag.Try again!!\n'
